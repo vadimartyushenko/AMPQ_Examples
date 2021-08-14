@@ -29,6 +29,8 @@ namespace Consumer
 				channel.BasicConsume(queueName, true, consumer);
 
 				Console.WriteLine("Subscribed to the queue '{0}'", queueName);
+
+				Console.ReadLine();
 			}
 		}
 
