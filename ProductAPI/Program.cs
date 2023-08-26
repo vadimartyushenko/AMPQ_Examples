@@ -1,4 +1,5 @@
 using ProductAPI.Data;
+using ProductAPI.QueueProducer;
 using ProductAPI.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -10,6 +11,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IProductService, ProductService>();
+builder.Services.AddScoped<IRabbitMQProducer, RabbitMQProducer>();
 builder.Services.AddDbContext<ProductDbContext>();
 
 var app = builder.Build();

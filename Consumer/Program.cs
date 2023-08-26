@@ -10,28 +10,27 @@ namespace Consumer
 		static void Main(string[] args)
 		{
 			var factory = new ConnectionFactory() { HostName = "localhost" };
-			var queueName = "FirstQueue";
+			const string queueName = "product";
 
-			using (var connection = factory.CreateConnection())
-			using (var channel = connection.CreateModel())
+			using var connection = factory.CreateConnection();
+			using var channel = connection.CreateModel();
+			channel.QueueDeclare(queue: queueName, exclusive: false);
+
+			var consumer = new EventingBasicConsumer(channel);
+
+			consumer.Received += (sender, e) =>
 			{
-				channel.QueueDeclare(queue: queueName, durable: false, exclusive: false, autoDelete: false, arguments: null);
+				var body = e.Body;
+				var message = Encoding.UTF8.GetString(body.ToArray());
+				Console.WriteLine(" Received message: {0}", message);
+			};
 
-				var consumer = new EventingBasicConsumer(channel);
+			//read the message
+			channel.BasicConsume(queueName, true, consumer);
 
-				consumer.Received += (sender, e) =>
-				{
-					var body = e.Body;
-					var message = Encoding.UTF8.GetString(body.ToArray());
-					Console.WriteLine(" Received message: {0}", message);
-				};
+			Console.WriteLine("Subscribed to the queue '{0}'", queueName);
 
-				channel.BasicConsume(queueName, true, consumer);
-
-				Console.WriteLine("Subscribed to the queue '{0}'", queueName);
-
-				Console.ReadLine();
-			}
+			Console.ReadLine();
 		}
 
 	}
